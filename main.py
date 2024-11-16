@@ -33,6 +33,7 @@ class Foot:
     def draw(self,app):
         # left,top=self.cx-(self.w/2),self.cy-(self.h/2)
         # drawRect(left,top,self.w,self.h,fill=self.color)
+        
         drawCircle(self.killZoneCX,self.killZoneCY,self.killZoneSz,fill=None,border='blue')
         if not self.stomping:
             drawRect(self.cx,self.cy,self.w,self.h,fill=self.color,align='center',opacity=50)
@@ -57,8 +58,9 @@ class Fly:
     def draw(self):
         if self.alive:
             drawCircle(self.cx,self.cy,self.size,fill=self.color)
-        # else:
-        #     drawStar(self.cx,self.cy,self.size,20,fill='red')
+        else:
+            drawStar(self.cx,self.cy,self.size,20,fill='red')
+
     
     def move(self):
         if not self.alive:
@@ -97,7 +99,18 @@ def bang(app): # i.e., flies bangin... sorry
     # 3: xyz
     # 4: xyz
     # 5: you lose immediately
-    pass
+    for i in range(len(app.flies)):
+        for j in range(i + 1, len(app.flies)):
+            fly1 = app.flies[i]
+            fly2 = app.flies[j]
+            if fly1.alive and fly2.alive:  # check for alive
+                distance = dist(fly1.cx, fly2.cx, fly1.cy, fly2.cy)
+                if distance <= fly1.size + fly2.size:
+                    # both death + produce new
+                    fly1.alive = False
+                    fly2.alive = False
+                    app.flies.append(Fly(fly1.cx, fly1.cy, fly1.size))
+                    print("bang!")
 
 
 ### UTILS
