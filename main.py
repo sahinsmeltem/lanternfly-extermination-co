@@ -192,6 +192,21 @@ def onAppStart(app):
     app.win = False
     app.season = 'spring'
 
+    app.tempImg = Image.open('images/temp-01.png')
+    app.tempImg = app.tempImg.convert('RGBA')
+    nums = app.tempImg.getdata()
+    newNums = []
+    for item in nums:
+        # if item[0] == 58 and item[1] == 84 and item[2] == 164:
+        if item[0] == 61 and item[1] == 84 and item[2] == 159:
+            newNums.append((255, 255, 255, 0))
+        else:
+            newNums.append(item)
+    app.tempImg.putdata(newNums)
+
+    tempImageWidth,tempImageHeight = app.tempImg.width,app.tempImg.height
+    app.tempImg = CMUImage(app.tempImg)
+
 def onStep(app):
     app.counter += 1/20
     seasonChange(app)
@@ -226,6 +241,10 @@ def redrawAll(app):
     for fly in app.flies:
         fly.draw()
     app.foot.draw(app)
+
+    drawImage(app.tempImg, app.width/2, app.height/2)
+
+
     
 
 def main():
