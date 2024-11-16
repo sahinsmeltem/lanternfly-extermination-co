@@ -10,7 +10,8 @@ import os, pathlib
 
 ### CHARS
 
-FLY_THRESHOLD = 3
+MATURE_THRESHOLD = 3
+DEAD_THRESHOLD = 10
 
 class Foot:
     def __init__(self,cx,cy,app):
@@ -53,34 +54,59 @@ class Fly:
         self.dy = 0
         self.flightLen = 0
         self.alive = True
+
+        self.situation = 'young'
         
 
+<<<<<<< Updated upstream
         #### import images ####
         self.img1 = Image.open("images/lanternfly2.png")
+=======
+        #### import fly images ####
+        self.img1 = Image.open("images/lanternfly1.png")
+>>>>>>> Stashed changes
         self.imageWidth,self.imageHeight = self.img1.width,self.img1.height
         
-        self.img2 = Image.open("images/lanternfly1.png")
+        self.img2 = Image.open("images/lanternfly2.png")
         self.imageWidth,self.imageHeight = self.img2.width,self.img2.height
 
-        self.img3 = Image.open("images/lanternflySplat.png")
+        self.img3 = Image.open("images/lanternfly3.png")
+        self.imageWidth,self.imageHeight = self.img2.width,self.img2.height
+
+        self.imgSplat = Image.open("images/lanternflySplat.png")
         self.imageWidth,self.imageHeight = self.img2.width,self.img2.height
 
         self.img1 = CMUImage(self.img1)
         self.img2 = CMUImage(self.img2)
+<<<<<<< Updated upstream
         self.img2 = CMUImage(self.img3)
+=======
+        self.img3 = CMUImage(self.img3)
+        self.imgSplat = CMUImage(self.imgSplat)
+>>>>>>> Stashed changes
         
 
     def draw(self):
         if self.alive:
-            angle = random.randrange(-30, 30)
-            img = self.img1
-            
-            scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
-            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center', rotateAngle=angle)
+            if self.situation == 'mature':
+                angle = random.randrange(-30, 30)
+                img = self.img2
+                scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
+                drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center', rotateAngle=angle)
+            elif self.situation == 'young':
+                img = self.img1
+                scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
+                drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
         else:
-            img = self.img2
-            scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
-            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
+            if self.situation == 'natural dead':
+                img = self.img3
+                scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
+                drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
+            elif self.situation == 'stomped':
+                img = self.imgSplat
+                scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
+                drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
+            
 
     
     def move(self):
@@ -94,9 +120,11 @@ class Fly:
             
 
     def update(self,app):
-        if app.counter-self.bTime > FLY_THRESHOLD: 
-            self.age=1
-            self.color='brown'
+        if app.counter-self.bTime > MATURE_THRESHOLD: 
+            self.situation = 'mature'
+        elif app.counter-self.bTime > DEAD_THRESHOLD: 
+            self.alive = False
+            self.situation = 'natural dead'
         # circle of life check
         bang(app)
         
@@ -132,9 +160,14 @@ def bang(app): # i.e., flies bangin... sorry
                     # both death + produce new
                     fly1.alive = False
                     fly2.alive = False
-                    app.flies.append(Fly(fly1.cx, fly1.cy, fly1.size))
+
+                    newFlycx = (fly1.cx + fly2.cx) / 2
+                    newFlycy = (fly1.cy + fly2.cy) / 2
+                    app.flies.append(Fly(newFlycx, newFlycy, app.counter))
+
                     print("bang!")
 
+                    
 
 ### UTILS
 def dist(x1, y1, x2, y2):
@@ -147,6 +180,7 @@ def stompEvaluation(app):
             if distance <= (fly.size + app.foot.killZoneSz):
                 # fly.die()
                 fly.alive=False # rip
+                fly.situation = 'stomped'
                 print('1 fly down')
             ############################################
             ############## yuki add sth here ###########
