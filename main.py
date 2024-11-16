@@ -67,9 +67,8 @@ class Fly:
             self.dx=0
             self.dy=0
         elif self.flightLen % 10 == 0:
-            pass
-            # self.dx = random.randint(-5,5)
-            # self.dy = random.randint(-5,5)
+            self.dx = random.randint(-5,5)
+            self.dy = random.randint(-5,5)
         
             
 
