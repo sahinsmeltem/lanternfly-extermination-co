@@ -178,7 +178,7 @@ def stompEvaluation(app):
                     fly.age += 50 # accelerate bug death
 
 def seasonChange(app):
-    if app.counter <= 60:
+    if 30 <= app.counter <= 60:
         app.season = 'summer'
     elif app.counter > 60 and app.counter <= 120:
         app.season = 'fall'
@@ -195,17 +195,29 @@ def checkGameStatus(app):
     if app.season != 'winter' and app.aliveFly == 0:
         app.win == True
 
-### DRAWING
-### HERE!!!! MELTEM HERE!!
 def drawBg(app):
+    bg1 = Image.open("images/bg/bgSpring.png")    
+    bg1 = CMUImage(bg1)
+
+    bg2 = Image.open("images/bg/bgSummer.png")    
+    bg2 = CMUImage(bg2)
+
+    bg3 = Image.open("images/bg/bgFall.png")    
+    bg3 = CMUImage(bg3)
+
+    bg4 = Image.open("images/bg/bgWinter.png")    
+    bg4 = CMUImage(bg4)
+
+
     if app.season == 'spring':
-        pass
+        drawImage(bg1,app.width/2, app.height/2, width=app.width, height=app.height, align = 'center')
     elif app.season == 'summer':
-        pass
+        drawImage(bg2,app.width/2, app.height/2, width=app.width, height=app.height, align = 'center')
     elif app.season == 'fall':
-        pass
+        drawImage(bg3,app.width/2, app.height/2, width=app.width, height=app.height, align = 'center')
     else:
-        pass
+        drawImage(bg4,app.width/2, app.height/2, width=app.width, height=app.height, align = 'center')                    
+
 
 def reset(app):
     app.foot=Foot(app.width/2,app.height/2,app)
@@ -264,9 +276,6 @@ def redrawAll(app):
     else:
         reset()
 
-
-
-    
 
 def main():
     runApp()
