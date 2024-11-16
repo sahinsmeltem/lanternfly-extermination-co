@@ -3,26 +3,23 @@ import random
 from PIL import Image
 import os, pathlib
 
-# SOUNDS NEEDED + IMAGES
+
+# SOUNDS NEEDED
 # stomp, lanternfly rip splat, ohhhmuaaagawdddd for bang()
-#########################################
-############ IMAGES & SOUNDS ############
-#########################################
 
 
-#########################################
-################# CHARS #################
-#########################################
+### CHARS
+
 FLY_THRESHOLD = 3
 
 class Foot:
     def __init__(self,cx,cy,app):
-        self.cx,self.cy = cx,cy # this is mouse coordinates
-        self.w = 60
-        self.h = 100
-        self.color = 'pink'
-        self.hype = 0
-        self.stomping = False
+        self.cx,self.cy=cx,cy # this is mouse coordinates
+        self.w=60
+        self.h=100
+        self.color='pink'
+        self.hype=0
+        self.stomping=False
 
         self.killZoneCX = self.cx
         self.killZoneCY = (self.cy-(self.h/2)) + self.w/2
@@ -31,7 +28,7 @@ class Foot:
 
     def update(self,x,y):
         self.cx,self.cy=x,y
-        self.killZoneCX,self.killZoneCY = x,(y-(self.h/2)) + self.w/2
+        self.killZoneCX,self.killZoneCY=x,(y-(self.h/2)) + self.w/2
 
     def draw(self,app):
         # left,top=self.cx-(self.w/2),self.cy-(self.h/2)
@@ -52,7 +49,7 @@ class Fly:
         self.cx = cx
         self.cy = cy
         self.size = 12
-        self.color = 'lightgray'
+        self.color = 'gray'
         self.bTime = bTime # birth time bug time birth time
         self.age = 0 # 0 = young; 1 = old
         self.dx = 0
@@ -98,7 +95,8 @@ class Fly:
             self.age=1
             self.color='brown'
         # circle of life check
-
+        bang(app)
+        
         # bounds check
         if (self.cx - (self.size / 2) <= 0):
             self.cx = (self.size / 2)
@@ -113,40 +111,29 @@ class Fly:
         self.cy += self.dy
         self.flightLen += 1
 
-def checkForIntersections(app):
-    # Iterate through all pairs of flies to check for intersections
-    for i in range(len(app.flies)):
-        for j in range(i + 1, len(app.flies)):
-            fly1, fly2 = app.flies[i], app.flies[j]
-            if fly1.alive and fly2.alive:  # check for alive
-                distance = dist(fly1.cx, fly1.cy, fly2.cx, fly2.cy)
-                if distance <= (fly1.size + fly2.size):
-                    return fly1, fly2
-    return None, None
 
 
-def bang(app, fly1, fly2): # i.e., flies bangin... sorry
+def bang(app): # i.e., flies bangin... sorry
     # for i in range(len(app.flies)-1)
 
     # checking for overlap (at least 2) 
     # 3: xyz
     # 4: xyz
     # 5: you lose immediately
-    
-    # both death + produce new
-    fly1.alive = False
-    fly2.alive = False
+    for i in range(len(app.flies)):
+        for j in range(i + 1, len(app.flies)):
+            fly1, fly2 = app.flies[i], app.flies[j]
+            if fly1.alive and fly2.alive:  # check for alive
+                distance = dist(fly1.cx, fly2.cx, fly1.cy, fly2.cy)
+                if distance <= fly1.size + fly2.size:
+                    # both death + produce new
+                    fly1.alive = False
+                    fly2.alive = False
+                    app.flies.append(Fly(fly1.cx, fly1.cy, fly1.size))
+                    print("bang!")
 
-    newFlycx = (fly1.cx + fly2.cx) / 2
-    newFlycy = (fly1.cy + fly2.cy) / 2
-    app.flies.append(Fly(newFlycx, newFlycy, app.counter))
 
-    print("bang!")
-
-
-#########################################
-################# UTILS #################
-#########################################
+### UTILS
 def dist(x1, y1, x2, y2):
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
@@ -158,8 +145,9 @@ def stompEvaluation(app):
                 # fly.die()
                 fly.alive=False # rip
                 print('1 fly down')
-            
-            ######### yuki added sth here ########### - CHECK!
+            ############################################
+            ############## yuki add sth here ###########
+            ############## copy paste next lines #######
             else: # if not a perfect stomp
                 if ((fly.cx+fly.size)>(app.foot.killZoneCX-app.foot.w/2) or
                     (fly.cx-fly.size)<(app.foot.killZoneCX+app.foot.w/2) or
@@ -167,10 +155,37 @@ def stompEvaluation(app):
                     (fly.cy-fly.size)<(app.foot.killZoneCY+app.foot.h/2)):
                     fly.age += 50 # accelerate bug death
 
+def seasonChange(app):
+    if app.counter <= 60:
+        app. seanson = 'summer'
+    elif app.counter > 60 and app.counter <= 120:
+        app. seanson = 'fall'
+    elif app.counter > 120 and app.counter <= 180:
+        app. seanson = 'winter'
 
-#########################################
-################ DRAWING ################
-#########################################
+def checkGameStatue(app):
+    # check game over 
+    if app.aliveFly >= 15:
+        app.gameOver == True
+    elif app.season == 'winter' and app.aliveFly > 0:
+        app.gameOver == True
+    # check win
+    if app.season != 'winter' and app.aliveFly == 0:
+        app.win == True
+
+########## batch import images #############
+'''
+# Get all files in the folder
+image_files = [f for f in os.listdir(image_folder) if f.endswith(('.png', '.jpg', '.jpeg'))]
+
+# Batch import and process images
+images = []
+for filename in image_files:
+    img = Image.open(path).convert("RGBA")  # Ensure RGBA mode for transparency
+    images.append(img)
+'''
+
+### DRAWING
 
 def onAppStart(app):
     app.foot=Foot(app.width/2,app.height/2,app)
@@ -181,22 +196,23 @@ def onAppStart(app):
     app.width = 400
     app.height = 400
     app.stepsPerSecond = 20 # default is 30?
-
+    app.aliveFly = 0
+    app.gameOver = False
+    app.win = False
+    app.season = 'spring'
 
 def onStep(app):
     app.counter += 1/20
+    seasonChange(app)
 
     for fly in app.flies:
         fly.move()
         fly.update(app)
-    
-    fly1, fly2 = checkForIntersections(app)
+        if fly.alive:
+            app.aliveFly += 1    
+    checkGameStatue(app)
 
-    if fly1 and fly2 != None and fly2.alive == True and fly2.alive == True:
-        bang(app, fly1, fly2)
-
-    
-
+    bang(app)
     
 def onKeyPress(app,key):
     if key=='space':
