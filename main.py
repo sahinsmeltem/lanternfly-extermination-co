@@ -135,6 +135,14 @@ def stompEvaluation(app):
                 # fly.die()
                 fly.alive=False # rip
                 print('1 fly down')
+            
+            ######### yuki added sth here ########### - CHECK!
+            else: # if not a perfect stomp
+                if ((fly.cx+fly.size)>(app.foot.killZoneCX-app.foot.w/2) or
+                    (fly.cx-fly.size)<(app.foot.killZoneCX+app.foot.w/2) or
+                    (fly.cy+fly.size)>(app.foot.killZoneCY-app.foot.h/2) or
+                    (fly.cy-fly.size)<(app.foot.killZoneCY+app.foot.h/2)):
+                    fly.age += 50 # accelerate bug death
 
 
 #########################################
