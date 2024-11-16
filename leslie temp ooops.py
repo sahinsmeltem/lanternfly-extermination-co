@@ -1,3 +1,6 @@
+# main as of 11am sastruday; meltem changes not yet here. 
+# newer version: in yuki temp.py
+
 print('Lanternfly Extermination Co.')
 
 from cmu_graphics import * 
@@ -33,7 +36,6 @@ class Foot:
     def draw(self,app):
         # left,top=self.cx-(self.w/2),self.cy-(self.h/2)
         # drawRect(left,top,self.w,self.h,fill=self.color)
-        
         drawCircle(self.killZoneCX,self.killZoneCY,self.killZoneSz,fill=None,border='blue')
         if not self.stomping:
             drawRect(self.cx,self.cy,self.w,self.h,fill=self.color,align='center',opacity=50)
@@ -58,17 +60,17 @@ class Fly:
     def draw(self):
         if self.alive:
             drawCircle(self.cx,self.cy,self.size,fill=self.color)
-        else:
-            drawStar(self.cx,self.cy,self.size,20,fill='red')
-
+        # else:
+        #     drawStar(self.cx,self.cy,self.size,20,fill='red')
     
     def move(self):
         if not self.alive:
             self.dx=0
             self.dy=0
         elif self.flightLen % 10 == 0:
-            self.dx = random.randint(-5,5)
-            self.dy = random.randint(-5,5)
+            pass
+            # self.dx = random.randint(-5,5)
+            # self.dy = random.randint(-5,5)
         
             
 
@@ -80,14 +82,10 @@ class Fly:
         bang(app)
         
         # bounds check
-        if (self.cx - (self.size / 2) <= 0):
-            self.cx = (self.size / 2)
-        elif (self.cx + (self.size / 2) >= app.width):
-            self.cx = app.width - (self.size / 2)
-        if (self.cy - (self.size / 2) <= 0):
-            self.cy = (self.size / 2)
-        elif (self.cy + (self.size / 2) >= app.height):
-            self.cy = app.height - (self.size / 2)
+        if (self.cx-(self.size/2) <= 0): self.cx=(self.size/2)
+        elif (self.cx+(self.size/2) >= app.width): self.cx=app.width-(self.size/2)
+        if (self.cy-(self.size/2) <= 0): self.cy=(self.size/2)
+        elif (self.cy+(self.size/2) >= app.height): self.cy=app.height-(self.size/2)
         
         self.cx += self.dx
         self.cy += self.dy
@@ -102,70 +100,21 @@ def bang(app): # i.e., flies bangin... sorry
     # 3: xyz
     # 4: xyz
     # 5: you lose immediately
-    for i in range(len(app.flies)):
-        for j in range(i + 1, len(app.flies)):
-            fly1, fly2 = app.flies[i], app.flies[j]
-            if fly1.alive and fly2.alive:  # check for alive
-                distance = dist(fly1.cx, fly2.cx, fly1.cy, fly2.cy)
-                if distance <= fly1.size + fly2.size:
-                    # both death + produce new
-                    fly1.alive = False
-                    fly2.alive = False
-                    app.flies.append(Fly(fly1.cx, fly1.cy, fly1.size))
-                    print("bang!")
+    pass
 
 
 ### UTILS
-def dist(x1, y1, x2, y2):
-    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+def dist(x1,x2,y1,y2):
+    return ((x1-x2)**2+(y1-y2)**2)**0.5
 
 def stompEvaluation(app):
     for fly in app.flies: # !!! POTENTIAL BUG 
-        if fly.alive:
-            distance = dist(fly.cx, fly.cy, app.foot.killZoneCX, app.foot.killZoneCY)
-            if distance <= (fly.size + app.foot.killZoneSz):
-                # fly.die()
-                fly.alive=False # rip
-                print('1 fly down')
-            ############################################
-            ############## yuki add sth here ###########
-            ############## copy paste next lines #######
-            else: # if not a perfect stomp
-                if ((fly.cx+fly.size)>(app.foot.killZoneCX-app.foot.w/2) or
-                    (fly.cx-fly.size)<(app.foot.killZoneCX+app.foot.w/2) or
-                    (fly.cy+fly.size)>(app.foot.killZoneCY-app.foot.h/2) or
-                    (fly.cy-fly.size)<(app.foot.killZoneCY+app.foot.h/2)):
-                    fly.age += 50 # accelerate bug death
+        print(fly)
+        if (dist(fly.cx,fly.cy,app.foot.killZoneCX,app.foot.killZoneCY)) <= (fly.size)+(app.foot.killZoneSz):
+            # fly.die()
+            fly.alive=False # rip
+            print('1 fly down')
 
-def seasonChange(app):
-    if app.counter <= 60:
-        app. seanson = 'summer'
-    elif app.counter > 60 and app.counter <= 120:
-        app. seanson = 'fall'
-    elif app.counter > 120 and app.counter <= 180:
-        app. seanson = 'winter'
-
-def checkGameStatue(app):
-    # check game over 
-    if app.aliveFly >= 15:
-        app.gameOver == True
-    elif app.season == 'winter' and app.aliveFly > 0:
-        app.gameOver == True
-    # check win
-    if app.season != 'winter' and app.aliveFly == 0:
-        app.win == True
-
-########## batch import images #############
-'''
-# Get all files in the folder
-image_files = [f for f in os.listdir(image_folder) if f.endswith(('.png', '.jpg', '.jpeg'))]
-
-# Batch import and process images
-images = []
-for filename in image_files:
-    img = Image.open(path).convert("RGBA")  # Ensure RGBA mode for transparency
-    images.append(img)
-'''
 
 ### DRAWING
 
@@ -178,23 +127,13 @@ def onAppStart(app):
     app.width = 400
     app.height = 400
     app.stepsPerSecond = 20 # default is 30?
-    app.aliveFly = 0
-    app.gameOver = False
-    app.win = False
-    app.season = 'spring'
 
 def onStep(app):
-    app.counter += 1/20
-    seasonChange(app)
+    app.counter+= 1/20
 
     for fly in app.flies:
         fly.move()
         fly.update(app)
-        if fly.alive:
-            app.aliveFly += 1    
-    checkGameStatue(app)
-
-    bang(app)
     
 def onKeyPress(app,key):
     if key=='space':
