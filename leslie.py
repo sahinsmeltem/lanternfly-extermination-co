@@ -26,41 +26,20 @@ class Foot:
         self.killZoneCY = (self.cy-(self.h/2)) + self.w/2
         self.killZoneSz = self.w/2 * 0.75
 
-        #### import foot images ####
-        self.img1 = Image.open("images/shoeFf1.png")
-        self.img2 = Image.open("images/shoeNb1.png")
-        self.img3 = Image.open("images/shoeNike1.png")
-        
-        self.imageWidth,self.imageHeight = self.img1.width,self.img1.height
-        
-
-        self.img1 = CMUImage(self.img1)
-        self.img2 = CMUImage(self.img2)
-        self.img3 = CMUImage(self.img3)
-        
-    
-    def draw(self,app): 
-        drawCircle(self.killZoneCX,self.killZoneCY,self.killZoneSz,fill=None,border='blue')
-        scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
-        if app.season == 'spring':
-            img = self.img3
-            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
-        elif app.season == 'summer':
-            img = self.img1
-            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
-        elif app.season == 'fall':
-            img = self.img2
-            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
-        else:
-            img = self.img2
-            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
-
 
     def update(self,x,y):
         self.cx,self.cy=x,y
         self.killZoneCX,self.killZoneCY=x,(y-(self.h/2)) + self.w/2
 
-    
+    def draw(self,app):
+        # left,top=self.cx-(self.w/2),self.cy-(self.h/2)
+        # drawRect(left,top,self.w,self.h,fill=self.color)
+        
+        drawCircle(self.killZoneCX,self.killZoneCY,self.killZoneSz,fill=None,border='blue')
+        if not self.stomping:
+            drawRect(self.cx,self.cy,self.w,self.h,fill=self.color,align='center',opacity=50)
+        else:
+            drawRect(self.cx,self.cy,self.w,self.h,fill=self.color,align='center',border='hotpink',borderWidth=10,opacity=50)
 
 
 class Fly:
@@ -199,24 +178,15 @@ def stompEvaluation(app):
                     fly.age += 50 # accelerate bug death
 
 def seasonChange(app):
-    if 3 <= app.counter <= 6:
+    if 30 <= app.counter <= 60:
         app.season = 'summer'
-    elif app.counter > 6 and app.counter <= 9:
+    elif app.counter > 60 and app.counter <= 120:
         app.season = 'fall'
-    elif app.counter > 9 and app.counter <= 12:
+    elif app.counter > 120 and app.counter <= 180:
         app.season = 'winter'
 
 def checkGameStatus(app):
-    # # check game over 
-    # if app.aliveFly >= 15:
-    #     app.gameOver == True
-    # elif app.season == 'winter' and app.aliveFly > 0:
-    #     app.gameOver == True
-    # # check win
-    # if app.season != 'winter' and app.aliveFly == 0:
-    #     app.win == True
-
-     # check game over 
+    # check game over 
     # if app.aliveFly >= 100:
     #     app.gameOver = True
     #     app.win = False
@@ -224,10 +194,12 @@ def checkGameStatus(app):
     #     app.gameOver = True
     #     app.win = False
     # check win
+    print(f'numFlies: {app.aliveFly}')
     if app.season != 'winter' and app.aliveFly < 3:
         app.gameOver = True
         app.win = True
-        print('should be over, you won')
+        print('shoudl be over, you won')
+    
 
 def drawBg(app):
     bg1 = Image.open("images/bg/bgSpring.png")    
@@ -261,24 +233,22 @@ def reset(app):
         app.flies.append(Fly(random.randint(0,app.width),random.randint(0,app.height),app.counter))
     app.width = 400
     app.height = 400
-    app.stepsPerSecond = 20 # default is 30?
+    app.stepsPerSecond = 12 # default is 30?
     app.aliveFly = 0
     app.gameOver = False
     app.win = False
     app.season = 'spring'
     app.reset=False
 
-
 def onAppStart(app):
     reset(app)
     app.welcomeScreen=True
 
 def onStep(app):
-    app.counter += 1/20
+    app.counter += 1/12
     seasonChange(app)
 
-    
-    if app.reset:
+    if app.reset:  # ADDED
         reset(app)
 
     ct=0
@@ -288,6 +258,7 @@ def onStep(app):
         if fly.alive:
             ct+=1
     app.aliveFly = ct
+      
     checkGameStatus(app)
 
     bang(app)
@@ -310,37 +281,31 @@ def onMouseMove(app,mx,my):
     app.foot.update(mx,my)
 
 
-# def redrawAll(app):
-#     if not app.gameOver:
-#         drawBg(app)
-#         for fly in app.flies:
-#             fly.draw()
-#         app.foot.draw(app)
-#     else:
-#         reset(app)
+
 
 
 def redrawAll(app): #LESLIE CHANGED THIS FUNCTION ENTIRELY
     if app.gameOver:
         if app.win:
-            drawLabel('YES, YOU DID IT.', 200, 170, size=40, bold=True, font='impact', fill='black')
+            drawLabel('YES, YOU DID IT.', 200, 170, size=40, bold=True, font='impact', fill='red')
         else:
-            drawLabel('YOU FAILED US.', 200, 170, size=40, bold=True, font='impact', fill='black')
-            drawLabel('GAME OVER', 200, 200, size=44, bold=True, font='arial', fill='black')
-        drawLabel('press r to restart', 200, 385, size=15, bold=True, font='arial', fill='black')    
+            drawLabel('YOU FAILED US.', 200, 170, size=40, bold=True, font='impact', fill='red')
+            drawLabel('GAME OVER', 200, 200, size=44, bold=True, font='arial', fill='red')
+        drawLabel('press r to restart', 200, 385, size=15, bold=True, font='arial', fill='red')    
         
     else:
         drawBg(app) # draw bg based on season
         if app.welcomeScreen and app.counter<1:
-            drawLabel('Lanternfly Stomper 4000'.upper(), 200, 200, size=33, bold=True, font='impact', fill='black')
-            drawLabel(f'move mouse to position foot'.upper(), 200, 325, size=15, bold=True, font='arial', fill='black')
-            drawLabel(f'press space to stomp'.upper(), 200, 345, size=15, bold=True, font='arial', fill='black')
+            drawLabel('Lanternfly Stomper 4000'.upper(), 200, 200, size=33, bold=True, font='impact', fill='red')
+            drawLabel(f'move mouse to position foot'.upper(), 200, 325, size=15, bold=True, font='arial', fill='red')
+            drawLabel(f'press space to stomp'.upper(), 200, 345, size=15, bold=True, font='arial', fill='red')
             
-            drawLabel(f'starting in {3-int(app.counter)}...'.upper(), 200, 385, size=15, bold=True, font='arial', fill='black')
+            drawLabel(f'starting in {3-int(app.counter)}...'.upper(), 200, 385, size=15, bold=True, font='arial', fill='red')
         else:
             for fly in app.flies:
                 fly.draw()
             app.foot.draw(app)
+
 
 
 def main():
