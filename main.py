@@ -26,20 +26,41 @@ class Foot:
         self.killZoneCY = (self.cy-(self.h/2)) + self.w/2
         self.killZoneSz = self.w/2 * 0.75
 
+        #### import foot images ####
+        self.img1 = Image.open("images/shoeFf1.png")
+        self.img2 = Image.open("images/shoeNb1.png")
+        self.img3 = Image.open("images/shoeNike1.png")
+        
+        self.imageWidth,self.imageHeight = self.img1.width,self.img1.height
+        
+
+        self.img1 = CMUImage(self.img1)
+        self.img2 = CMUImage(self.img2)
+        self.img3 = CMUImage(self.img3)
+        
+    
+    def draw(self,app): 
+        drawCircle(self.killZoneCX,self.killZoneCY,self.killZoneSz,fill=None,border='blue')
+        scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
+        if app.season == 'spring':
+            img = self.img3
+            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
+        elif app.season == 'summer':
+            img = self.img1
+            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
+        elif app.season == 'fall':
+            img = self.img2
+            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
+        else:
+            img = self.img2
+            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
+
 
     def update(self,x,y):
         self.cx,self.cy=x,y
         self.killZoneCX,self.killZoneCY=x,(y-(self.h/2)) + self.w/2
 
-    def draw(self,app):
-        # left,top=self.cx-(self.w/2),self.cy-(self.h/2)
-        # drawRect(left,top,self.w,self.h,fill=self.color)
-        
-        drawCircle(self.killZoneCX,self.killZoneCY,self.killZoneSz,fill=None,border='blue')
-        if not self.stomping:
-            drawRect(self.cx,self.cy,self.w,self.h,fill=self.color,align='center',opacity=50)
-        else:
-            drawRect(self.cx,self.cy,self.w,self.h,fill=self.color,align='center',border='hotpink',borderWidth=10,opacity=50)
+    
 
 
 class Fly:
@@ -178,11 +199,11 @@ def stompEvaluation(app):
                     fly.age += 50 # accelerate bug death
 
 def seasonChange(app):
-    if 30 <= app.counter <= 60:
+    if 3 <= app.counter <= 6:
         app.season = 'summer'
-    elif app.counter > 60 and app.counter <= 120:
+    elif app.counter > 6 and app.counter <= 9:
         app.season = 'fall'
-    elif app.counter > 120 and app.counter <= 180:
+    elif app.counter > 9 and app.counter <= 12:
         app.season = 'winter'
 
 def checkGameStatus(app):
