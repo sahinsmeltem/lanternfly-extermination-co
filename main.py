@@ -1,9 +1,14 @@
 from cmu_graphics import * 
 import random
+from PIL import Image
+import os, pathlib
 
-
-# SOUNDS NEEDED
+# SOUNDS NEEDED + IMAGES
 # stomp, lanternfly rip splat, ohhhmuaaagawdddd for bang()
+#########################################
+############ IMAGES & SOUNDS ############
+#########################################
+
 
 #########################################
 ################# CHARS #################
@@ -12,12 +17,12 @@ FLY_THRESHOLD = 3
 
 class Foot:
     def __init__(self,cx,cy,app):
-        self.cx,self.cy=cx,cy # this is mouse coordinates
-        self.w=60
-        self.h=100
-        self.color='pink'
-        self.hype=0
-        self.stomping=False
+        self.cx,self.cy = cx,cy # this is mouse coordinates
+        self.w = 60
+        self.h = 100
+        self.color = 'pink'
+        self.hype = 0
+        self.stomping = False
 
         self.killZoneCX = self.cx
         self.killZoneCY = (self.cy-(self.h/2)) + self.w/2
@@ -26,7 +31,7 @@ class Foot:
 
     def update(self,x,y):
         self.cx,self.cy=x,y
-        self.killZoneCX,self.killZoneCY=x,(y-(self.h/2)) + self.w/2
+        self.killZoneCX,self.killZoneCY = x,(y-(self.h/2)) + self.w/2
 
     def draw(self,app):
         # left,top=self.cx-(self.w/2),self.cy-(self.h/2)
@@ -44,7 +49,7 @@ class Fly:
         self.cx = cx
         self.cy = cy
         self.size = 12
-        self.color = 'gray'
+        self.color = 'lightgray'
         self.bTime = bTime # birth time bug time birth time
         self.age = 0 # 0 = young; 1 = old
         self.dx = 0
@@ -52,10 +57,17 @@ class Fly:
         self.flightLen = 0
         self.alive = True
 
+        self.image = Image.open("images/nature-bee-insect.png")
+        self.imageWidth,self.imageHeight = self.image.width,self.image.height
+        self.image = CMUImage(self.image)
+
 
     def draw(self):
         if self.alive:
-            drawCircle(self.cx,self.cy,self.size,fill=self.color)
+            angle = random.randrange(-30,30)
+            scaledWidth, scaledHeight = (self.imageWidth//10,self.imageHeight//10)
+            drawImage(self.image,self.cx,self.cy, width=scaledWidth, height=scaledHeight, align = 'center', rotateAngle=angle)
+            # drawCircle(self.cx,self.cy,self.size,fill=self.color)
         else:
             drawStar(self.cx,self.cy,self.size,20,fill='red')
 
@@ -158,6 +170,7 @@ def onAppStart(app):
     app.width = 400
     app.height = 400
     app.stepsPerSecond = 20 # default is 30?
+
 
 def onStep(app):
     app.counter += 1/20
