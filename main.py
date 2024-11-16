@@ -58,13 +58,8 @@ class Fly:
         self.situation = 'young'
         
 
-<<<<<<< Updated upstream
-        #### import images ####
-        self.img1 = Image.open("images/lanternfly2.png")
-=======
         #### import fly images ####
         self.img1 = Image.open("images/lanternfly1.png")
->>>>>>> Stashed changes
         self.imageWidth,self.imageHeight = self.img1.width,self.img1.height
         
         self.img2 = Image.open("images/lanternfly2.png")
@@ -78,12 +73,8 @@ class Fly:
 
         self.img1 = CMUImage(self.img1)
         self.img2 = CMUImage(self.img2)
-<<<<<<< Updated upstream
-        self.img2 = CMUImage(self.img3)
-=======
         self.img3 = CMUImage(self.img3)
         self.imgSplat = CMUImage(self.imgSplat)
->>>>>>> Stashed changes
         
 
     def draw(self):
@@ -145,12 +136,6 @@ class Fly:
 
 
 def bang(app): # i.e., flies bangin... sorry
-    # for i in range(len(app.flies)-1)
-
-    # checking for overlap (at least 2) 
-    # 3: xyz
-    # 4: xyz
-    # 5: you lose immediately
     for i in range(len(app.flies)):
         for j in range(i + 1, len(app.flies)):
             fly1, fly2 = app.flies[i], app.flies[j]
@@ -164,7 +149,7 @@ def bang(app): # i.e., flies bangin... sorry
                     newFlycx = (fly1.cx + fly2.cx) / 2
                     newFlycy = (fly1.cy + fly2.cy) / 2
                     app.flies.append(Fly(newFlycx, newFlycy, app.counter))
-
+                    
                     print("bang!")
 
                     
@@ -194,13 +179,13 @@ def stompEvaluation(app):
 
 def seasonChange(app):
     if app.counter <= 60:
-        app. seanson = 'summer'
+        app.season = 'summer'
     elif app.counter > 60 and app.counter <= 120:
-        app. seanson = 'fall'
+        app.season = 'fall'
     elif app.counter > 120 and app.counter <= 180:
-        app. seanson = 'winter'
+        app.season = 'winter'
 
-def checkGameStatue(app):
+def checkGameStatus(app):
     # check game over 
     if app.aliveFly >= 15:
         app.gameOver == True
@@ -211,8 +196,18 @@ def checkGameStatue(app):
         app.win == True
 
 ### DRAWING
+### HERE!!!! MELTEM HERE!!
+def drawBg(app):
+    if app.season == 'spring':
+        pass
+    elif app.season == 'summer':
+        pass
+    elif app.season == 'fall':
+        pass
+    else:
+        pass
 
-def onAppStart(app):
+def reset(app):
     app.foot=Foot(app.width/2,app.height/2,app)
     app.flies = [ ]
     app.counter = 0 
@@ -226,20 +221,10 @@ def onAppStart(app):
     app.win = False
     app.season = 'spring'
 
-    app.tempImg = Image.open('images/temp-01.png')
-    app.tempImg = app.tempImg.convert('RGBA')
-    nums = app.tempImg.getdata()
-    newNums = []
-    for item in nums:
-        # if item[0] == 58 and item[1] == 84 and item[2] == 164:
-        if item[0] == 61 and item[1] == 84 and item[2] == 159:
-            newNums.append((255, 255, 255, 0))
-        else:
-            newNums.append(item)
-    app.tempImg.putdata(newNums)
 
-    tempImageWidth,tempImageHeight = app.tempImg.width,app.tempImg.height
-    app.tempImg = CMUImage(app.tempImg)
+def onAppStart(app):
+    reset(app)
+    app.welcomeScreen=True
 
 def onStep(app):
     app.counter += 1/20
@@ -250,7 +235,7 @@ def onStep(app):
         fly.update(app)
         if fly.alive:
             app.aliveFly += 1    
-    checkGameStatue(app)
+    checkGameStatus(app)
 
     bang(app)
     
@@ -271,12 +256,14 @@ def onMouseMove(app,mx,my):
 
 
 def redrawAll(app):
-    drawRect(0,0,app.width,app.height,fill='black')
-    for fly in app.flies:
-        fly.draw()
-    app.foot.draw(app)
+    if not app.gameOver:
+        drawBg(app)
+        for fly in app.flies:
+            fly.draw()
+        app.foot.draw(app)
+    else:
+        reset()
 
-    drawImage(app.tempImg, app.width/2, app.height/2)
 
 
     
