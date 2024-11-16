@@ -81,10 +81,14 @@ class Fly:
         bang(app)
         
         # bounds check
-        if (self.cx-(self.size/2) <= 0): self.cx=(self.size/2)
-        elif (self.cx+(self.size/2) >= app.width): self.cx=app.width-(self.size/2)
-        if (self.cy-(self.size/2) <= 0): self.cy=(self.size/2)
-        elif (self.cy+(self.size/2) >= app.height): self.cy=app.height-(self.size/2)
+        if (self.cx - (self.size / 2) <= 0):
+            self.cx = (self.size / 2)
+        elif (self.cx + (self.size / 2) >= app.width):
+            self.cx = app.width - (self.size / 2)
+        if (self.cy - (self.size / 2) <= 0):
+            self.cy = (self.size / 2)
+        elif (self.cy + (self.size / 2) >= app.height):
+            self.cy = app.height - (self.size / 2)
         
         self.cx += self.dx
         self.cy += self.dy
@@ -101,8 +105,7 @@ def bang(app): # i.e., flies bangin... sorry
     # 5: you lose immediately
     for i in range(len(app.flies)):
         for j in range(i + 1, len(app.flies)):
-            fly1 = app.flies[i]
-            fly2 = app.flies[j]
+            fly1, fly2 = app.flies[i], app.flies[j]
             if fly1.alive and fly2.alive:  # check for alive
                 distance = dist(fly1.cx, fly2.cx, fly1.cy, fly2.cy)
                 if distance <= fly1.size + fly2.size:
@@ -114,16 +117,17 @@ def bang(app): # i.e., flies bangin... sorry
 
 
 ### UTILS
-def dist(x1,x2,y1,y2):
-    return ((x1-x2)**2+(y1-y2)**2)**0.5
+def dist(x1, y1, x2, y2):
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
 def stompEvaluation(app):
     for fly in app.flies: # !!! POTENTIAL BUG 
-        print(fly)
-        if (dist(fly.cx,fly.cy,app.foot.killZoneCX,app.foot.killZoneCY)) <= (fly.size)+(app.foot.killZoneSz):
-            # fly.die()
-            fly.alive=False # rip
-            print('1 fly down')
+        if fly.alive:
+            distance = dist(fly.cx, fly.cy, app.foot.killZoneCX, app.foot.killZoneCY)
+            if distance <= (fly.size + app.foot.killZoneSz):
+                # fly.die()
+                fly.alive=False # rip
+                print('1 fly down')
 
 
 ### DRAWING
@@ -139,11 +143,12 @@ def onAppStart(app):
     app.stepsPerSecond = 20 # default is 30?
 
 def onStep(app):
-    app.counter+= 1/20
+    app.counter += 1/20
 
     for fly in app.flies:
         fly.move()
         fly.update(app)
+    bang(app)
     
 def onKeyPress(app,key):
     if key=='space':
