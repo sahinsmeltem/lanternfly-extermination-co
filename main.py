@@ -44,6 +44,9 @@ class Foot:
             drawRect(self.cx,self.cy,self.w,self.h,fill=self.color,align='center',border='hotpink',borderWidth=10,opacity=50)
 
 
+def openImage(fileName):
+        return Image.open(os.path.join(pathlib.Path(__file__).parent,fileName))
+
 class Fly:
     def __init__(self, cx, cy, bTime):
         self.cx = cx
@@ -56,26 +59,28 @@ class Fly:
         self.dy = 0
         self.flightLen = 0
         self.alive = True
+        
+ 
+        self.img1 = openImage("images/lanternfly2.png")
+        self.imageWidth,self.imageHeight = self.img1.width,self.img1.height
+        
+        self.img2 = openImage("images/lanternfly1.png")
+        self.imageWidth,self.imageHeight = self.img2.width,self.img2.height
 
-        self.image1 = Image.open("images/lanternfly2.png")
-        self.imageWidth1,self.imageHeight1 = self.image1.width,self.image1.height
-        self.image1 = CMUImage(self.image1)
-
-        self.image2 = Image.open("images/lanternfly1.png")
-        self.imageWidth2,self.imageHeight2 = self.image2.width,self.image2.height
-        self.image2 = CMUImage(self.image2)
-
+        self.img1 = CMUImage(self.img1)
+        self.img2 = CMUImage(self.img2)
+        
 
     def draw(self):
         if self.alive:
-            angle = random.randrange(-30,30)
-            scaledWidth1, scaledHeight1 = (self.imageWidth1//5,self.imageHeight1//5)
-            drawImage(self.image1,self.cx,self.cy, width=scaledWidth1, height=scaledHeight1, align = 'center', rotateAngle=angle)
-            # drawCircle(self.cx,self.cy,self.size,fill=self.color)
+            img = self.img1
+            angle = random.randrange(-30, 30)
+            scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
+            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center', rotateAngle=angle)
         else:
-            # drawStar(self.cx,self.cy,self.size,20,fill='red')
-            scaledWidth2, scaledHeight2 = (self.imageWidth2//5,self.imageHeight2//5)
-            drawImage(self.image2,self.cx,self.cy, width=scaledWidth2, height=scaledHeight2, align = 'center')
+            img = self.img2
+            scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
+            drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center')
 
     
     def move(self):
@@ -210,13 +215,11 @@ def onMouseMove(app,mx,my):
 
 
 def redrawAll(app):
+    drawRect(0,0,app.width,app.height,fill='black')
     for fly in app.flies:
         fly.draw()
     app.foot.draw(app)
     
-
-
-
 
 def main():
     runApp()
