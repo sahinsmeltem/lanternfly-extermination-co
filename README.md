@@ -4,7 +4,7 @@ Oh no! Lanternflies get ahead of you!!! And there are so many of them!!! HEEEEEE
 You need a professional.
 Allow me to introduce: LANTERNFLY-EXTERMINATION CO.
 
-GAME STARTES!
+# GAME STARTES!
 
 You play as a experienced lanternfly stomper, and your work starts in Spring.
 
@@ -20,3 +20,16 @@ The lanternflies can grow up with seasonal change. They start young, with closed
 - Winter is coming
 If you managed to kill them all before winter comes, you win! Bravo! You earned reputation for your company! Othwise, if there is even one of them existing when winter comes, you loss; Or in any moment, if there are 30 of them, you also loss.
 
+# Models used
+cmu_graphics
+random
+pillow
+os, pathlib
+
+from cmu_graphics import * 
+import random
+from PIL import Image
+import os, pathlib
+
+# File to run
+main.py
