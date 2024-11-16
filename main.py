@@ -41,9 +41,6 @@ class Foot:
             drawRect(self.cx,self.cy,self.w,self.h,fill=self.color,align='center',border='hotpink',borderWidth=10,opacity=50)
 
 
-def openImage(fileName):
-        return Image.open(os.path.join(pathlib.Path(__file__).parent,fileName))
-
 class Fly:
     def __init__(self, cx, cy, bTime):
         self.cx = cx
@@ -57,21 +54,27 @@ class Fly:
         self.flightLen = 0
         self.alive = True
         
- 
-        self.img1 = openImage("images/lanternfly2.png")
+
+        #### import images ####
+        self.img1 = Image.open("images/lanternfly2.png")
         self.imageWidth,self.imageHeight = self.img1.width,self.img1.height
         
-        self.img2 = openImage("images/lanternfly1.png")
+        self.img2 = Image.open("images/lanternfly1.png")
+        self.imageWidth,self.imageHeight = self.img2.width,self.img2.height
+
+        self.img3 = Image.open("images/lanternflySplat.png")
         self.imageWidth,self.imageHeight = self.img2.width,self.img2.height
 
         self.img1 = CMUImage(self.img1)
         self.img2 = CMUImage(self.img2)
+        self.img2 = CMUImage(self.img3)
         
 
     def draw(self):
         if self.alive:
-            img = self.img1
             angle = random.randrange(-30, 30)
+            img = self.img1
+            
             scaledWidth, scaledHeight = (self.imageWidth // 5, self.imageHeight // 5)
             drawImage(img, self.cx, self.cy, width=scaledWidth, height=scaledHeight, align='center', rotateAngle=angle)
         else:
@@ -172,18 +175,6 @@ def checkGameStatue(app):
     # check win
     if app.season != 'winter' and app.aliveFly == 0:
         app.win == True
-
-########## batch import images #############
-'''
-# Get all files in the folder
-image_files = [f for f in os.listdir(image_folder) if f.endswith(('.png', '.jpg', '.jpeg'))]
-
-# Batch import and process images
-images = []
-for filename in image_files:
-    img = Image.open(path).convert("RGBA")  # Ensure RGBA mode for transparency
-    images.append(img)
-'''
 
 ### DRAWING
 
