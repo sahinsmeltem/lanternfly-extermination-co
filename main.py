@@ -57,19 +57,25 @@ class Fly:
         self.flightLen = 0
         self.alive = True
 
-        self.image = Image.open("images/nature-bee-insect.png")
-        self.imageWidth,self.imageHeight = self.image.width,self.image.height
-        self.image = CMUImage(self.image)
+        self.image1 = Image.open("images/lanternfly2.png")
+        self.imageWidth1,self.imageHeight1 = self.image1.width,self.image1.height
+        self.image1 = CMUImage(self.image1)
+
+        self.image2 = Image.open("images/lanternfly1.png")
+        self.imageWidth2,self.imageHeight2 = self.image2.width,self.image2.height
+        self.image2 = CMUImage(self.image2)
 
 
     def draw(self):
         if self.alive:
             angle = random.randrange(-30,30)
-            scaledWidth, scaledHeight = (self.imageWidth//10,self.imageHeight//10)
-            drawImage(self.image,self.cx,self.cy, width=scaledWidth, height=scaledHeight, align = 'center', rotateAngle=angle)
+            scaledWidth1, scaledHeight1 = (self.imageWidth1//5,self.imageHeight1//5)
+            drawImage(self.image1,self.cx,self.cy, width=scaledWidth1, height=scaledHeight1, align = 'center', rotateAngle=angle)
             # drawCircle(self.cx,self.cy,self.size,fill=self.color)
         else:
-            drawStar(self.cx,self.cy,self.size,20,fill='red')
+            # drawStar(self.cx,self.cy,self.size,20,fill='red')
+            scaledWidth2, scaledHeight2 = (self.imageWidth2//5,self.imageHeight2//5)
+            drawImage(self.image2,self.cx,self.cy, width=scaledWidth2, height=scaledHeight2, align = 'center')
 
     
     def move(self):
