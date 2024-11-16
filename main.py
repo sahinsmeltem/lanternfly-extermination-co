@@ -55,7 +55,7 @@ class Fly:
         self.alive = True
         
 
-        #### import images ####
+        #### import fly images ####
         self.img1 = Image.open("images/lanternfly2.png")
         self.imageWidth,self.imageHeight = self.img1.width,self.img1.height
         
@@ -67,7 +67,7 @@ class Fly:
 
         self.img1 = CMUImage(self.img1)
         self.img2 = CMUImage(self.img2)
-        self.img2 = CMUImage(self.img3)
+        self.img3 = CMUImage(self.img3)
         
 
     def draw(self):
