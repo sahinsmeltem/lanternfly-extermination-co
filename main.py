@@ -1,5 +1,3 @@
-print('Lanternfly Extermination Co.')
-
 from cmu_graphics import * 
 import random
 
@@ -7,9 +5,9 @@ import random
 # SOUNDS NEEDED
 # stomp, lanternfly rip splat, ohhhmuaaagawdddd for bang()
 
-
-### CHARS
-
+#########################################
+################# CHARS #################
+#########################################
 FLY_THRESHOLD = 3
 
 class Foot:
@@ -77,8 +75,7 @@ class Fly:
             self.age=1
             self.color='brown'
         # circle of life check
-        bang(app)
-        
+
         # bounds check
         if (self.cx - (self.size / 2) <= 0):
             self.cx = (self.size / 2)
@@ -93,29 +90,40 @@ class Fly:
         self.cy += self.dy
         self.flightLen += 1
 
+def checkForIntersections(app):
+    # Iterate through all pairs of flies to check for intersections
+    for i in range(len(app.flies)):
+        for j in range(i + 1, len(app.flies)):
+            fly1, fly2 = app.flies[i], app.flies[j]
+            if fly1.alive and fly2.alive:  # check for alive
+                distance = dist(fly1.cx, fly1.cy, fly2.cx, fly2.cy)
+                if distance <= (fly1.size + fly2.size):
+                    return fly1, fly2
+    return None, None
 
 
-def bang(app): # i.e., flies bangin... sorry
+def bang(app, fly1, fly2): # i.e., flies bangin... sorry
     # for i in range(len(app.flies)-1)
 
     # checking for overlap (at least 2) 
     # 3: xyz
     # 4: xyz
     # 5: you lose immediately
-    for i in range(len(app.flies)):
-        for j in range(i + 1, len(app.flies)):
-            fly1, fly2 = app.flies[i], app.flies[j]
-            if fly1.alive and fly2.alive:  # check for alive
-                distance = dist(fly1.cx, fly2.cx, fly1.cy, fly2.cy)
-                if distance <= fly1.size + fly2.size:
-                    # both death + produce new
-                    fly1.alive = False
-                    fly2.alive = False
-                    app.flies.append(Fly(fly1.cx, fly1.cy, fly1.size))
-                    print("bang!")
+    
+    # both death + produce new
+    fly1.alive = False
+    fly2.alive = False
+
+    newFlycx = (fly1.cx + fly2.cx) / 2
+    newFlycy = (fly1.cy + fly2.cy) / 2
+    app.flies.append(Fly(newFlycx, newFlycy, app.counter))
+
+    print("bang!")
 
 
-### UTILS
+#########################################
+################# UTILS #################
+#########################################
 def dist(x1, y1, x2, y2):
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
@@ -129,7 +137,9 @@ def stompEvaluation(app):
                 print('1 fly down')
 
 
-### DRAWING
+#########################################
+################ DRAWING ################
+#########################################
 
 def onAppStart(app):
     app.foot=Foot(app.width/2,app.height/2,app)
@@ -147,7 +157,14 @@ def onStep(app):
     for fly in app.flies:
         fly.move()
         fly.update(app)
-    bang(app)
+    
+    fly1, fly2 = checkForIntersections(app)
+
+    if fly1 and fly2 != None and fly2.alive == True and fly2.alive == True:
+        bang(app, fly1, fly2)
+
+    
+
     
 def onKeyPress(app,key):
     if key=='space':
